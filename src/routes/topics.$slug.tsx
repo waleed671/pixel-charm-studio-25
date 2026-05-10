@@ -2,11 +2,11 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowLeft, Check, Copy } from "lucide-react";
-import { getTopic, TOPICS } from "@/data/topics";
+import { getTopic, TOPICS, type Topic } from "@/data/topics";
 import { Gallery } from "@/components/Gallery";
 
 export const Route = createFileRoute("/topics/$slug")({
-  loader: ({ params }) => {
+  loader: ({ params }): { topic: Topic } => {
     const t = getTopic(params.slug);
     if (!t) throw notFound();
     return { topic: t };
