@@ -9,38 +9,104 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TopicsRouteImport } from './routes/topics'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as CheatsheetRouteImport } from './routes/cheatsheet'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as TopicsSlugRouteImport } from './routes/topics.$slug'
 
+const TopicsRoute = TopicsRouteImport.update({
+  id: '/topics',
+  path: '/topics',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheatsheetRoute = CheatsheetRouteImport.update({
+  id: '/cheatsheet',
+  path: '/cheatsheet',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TopicsSlugRoute = TopicsSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => TopicsRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cheatsheet': typeof CheatsheetRoute
+  '/profile': typeof ProfileRoute
+  '/topics': typeof TopicsRouteWithChildren
+  '/topics/$slug': typeof TopicsSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cheatsheet': typeof CheatsheetRoute
+  '/profile': typeof ProfileRoute
+  '/topics': typeof TopicsRouteWithChildren
+  '/topics/$slug': typeof TopicsSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cheatsheet': typeof CheatsheetRoute
+  '/profile': typeof ProfileRoute
+  '/topics': typeof TopicsRouteWithChildren
+  '/topics/$slug': typeof TopicsSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/cheatsheet' | '/profile' | '/topics' | '/topics/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/cheatsheet' | '/profile' | '/topics' | '/topics/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/cheatsheet'
+    | '/profile'
+    | '/topics'
+    | '/topics/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CheatsheetRoute: typeof CheatsheetRoute
+  ProfileRoute: typeof ProfileRoute
+  TopicsRoute: typeof TopicsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/topics': {
+      id: '/topics'
+      path: '/topics'
+      fullPath: '/topics'
+      preLoaderRoute: typeof TopicsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cheatsheet': {
+      id: '/cheatsheet'
+      path: '/cheatsheet'
+      fullPath: '/cheatsheet'
+      preLoaderRoute: typeof CheatsheetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,12 +114,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/topics/$slug': {
+      id: '/topics/$slug'
+      path: '/$slug'
+      fullPath: '/topics/$slug'
+      preLoaderRoute: typeof TopicsSlugRouteImport
+      parentRoute: typeof TopicsRoute
+    }
   }
 }
 
+interface TopicsRouteChildren {
+  TopicsSlugRoute: typeof TopicsSlugRoute
+}
+
+const TopicsRouteChildren: TopicsRouteChildren = {
+  TopicsSlugRoute: TopicsSlugRoute,
+}
+
+const TopicsRouteWithChildren =
+  TopicsRoute._addFileChildren(TopicsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CheatsheetRoute: CheatsheetRoute,
+  ProfileRoute: ProfileRoute,
+  TopicsRoute: TopicsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
