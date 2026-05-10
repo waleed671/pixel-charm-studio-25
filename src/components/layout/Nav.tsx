@@ -1,12 +1,19 @@
 import { Link } from "@tanstack/react-router";
 import { Database, LayoutGrid, ListChecks, UserCircle2 } from "lucide-react";
 
-const links = [
+type LinkItem = {
+  to: "/" | "/topics" | "/cheatsheet" | "/profile";
+  label: string;
+  end?: boolean;
+  icon?: typeof LayoutGrid;
+};
+
+const links: LinkItem[] = [
   { to: "/", label: "Home", end: true },
   { to: "/topics", label: "Topics", icon: LayoutGrid },
   { to: "/cheatsheet", label: "Cheatsheet", icon: ListChecks },
   { to: "/profile", label: "Profile", icon: UserCircle2 },
-] as const;
+];
 
 export function Nav() {
   return (
@@ -30,7 +37,7 @@ export function Nav() {
               }}
               className="flex items-center gap-1.5 rounded-lg border border-transparent px-3 py-1.5 text-sm text-muted-foreground transition hover:text-foreground hover:bg-[color:var(--surface-2)]"
             >
-              {"icon" in l && l.icon ? <l.icon className="h-4 w-4" /> : null}
+              {l.icon ? <l.icon className="h-4 w-4" /> : null}
               {l.label}
             </Link>
           ))}
