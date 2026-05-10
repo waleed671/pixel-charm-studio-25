@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Search, ArrowRight } from "lucide-react";
 import { TOPICS } from "@/data/topics";
 
-export const Route = createFileRoute("/topics")({
+export const Route = createFileRoute("/topics/")({
   head: () => ({
     meta: [
       { title: "All Topics — DSA Research Hub" },
