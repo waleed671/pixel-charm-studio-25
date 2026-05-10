@@ -27,7 +27,8 @@ export const Route = createFileRoute("/topics/$slug")({
 });
 
 function TopicDetail() {
-  const { topic } = Route.useLoaderData();
+  const data = Route.useLoaderData() as { topic: Topic };
+  const topic = data.topic;
   const idx = TOPICS.findIndex((t) => t.slug === topic.slug);
   const next = TOPICS[(idx + 1) % TOPICS.length];
 
